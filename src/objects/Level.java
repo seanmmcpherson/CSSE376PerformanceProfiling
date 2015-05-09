@@ -67,6 +67,7 @@ public class Level {
 																	// boxes.
 	private ArrayList<Gold> goldObjects; // The arraylist of Gold objects.
 	private HashMap<Integer, BufferedImage> images; // Hashmap of tile images.
+	private boolean[][] updatedTiles;
 
 	/**
 	 * Constructs a Level object with given tileSize that searches for a
@@ -212,6 +213,9 @@ public class Level {
 			this.mapHeight = Integer.parseInt(imageReader.readLine());
 
 			this.map = new int[this.mapHeight][this.mapWidth];
+			this.updatedTiles = new boolean[this.mapHeight][this.mapWidth];					
+
+			
 
 			for (int r = 0; r < this.map.length; r++) {
 				// Get line of numbers and spaces.
@@ -225,6 +229,7 @@ public class Level {
 					// Convert the String integers into integer values to be
 					// stored in level.
 					this.map[c][r] = Integer.parseInt(currentLineValues[c]);
+					this.updatedTiles[c][r] = true;
 				}
 			}
 			img = new BufferedImage(this.mapWidth*this.tileSize,this.mapHeight*this.tileSize,BufferedImage.TYPE_INT_RGB);
@@ -358,8 +363,11 @@ public class Level {
 	 */
 	public void drawTileImage(int tileValue, int row, int col, Graphics2D g2) {
 		// FIXME: reduce the number of calls to the code below. When does drawImage really need to be called?
-		BufferedImage image = this.images.get(tileValue);
-		g2.drawImage(image, row * this.tileSize, col * this.tileSize, null);
+		if (this.updatedTiles[row][col]) {
+			BufferedImage image = this.images.get(tileValue);
+			g2.drawImage(image, row * this.tileSize, col * this.tileSize, null);
+			this.updatedTiles[row][col] = false;
+		}
 	}
 
 	/**
@@ -384,6 +392,8 @@ public class Level {
 	 */
 	public void updateTile(int x, int y, int tileID) {
 		this.map[x][y] = tileID;
+		this.updatedTiles[x][y] = true;
+		
 	}
 
 	/**
